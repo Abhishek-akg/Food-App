@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import RestaurantCard from "./RestaurantCard";
+import { useEffect, useState, useContext } from "react";
+import RestaurantCard, { withFlatDealLabel } from "./RestaurantCard";
 import Shimmer from "./Shimmer";
 import { Link } from "react-router-dom";
 import useOnlineStatus from "./useOnlineStatus";
+import UserContext from "../Utils/userContext";
 
 const Body = () => {
   const [listOfRestaurants, setListOfRestaurant] = useState([]);
@@ -10,7 +11,9 @@ const Body = () => {
 
   const [searchText, setSearchText] = useState("");
 
-  console.log("Body Rendered");
+  const RestaurantCardDeal = withFlatDealLabel(RestaurantCard);
+
+  //console.log("Body Rendered", listOfRestaurants);
 
   useEffect(() => {
     fetchData();
@@ -41,6 +44,7 @@ const Body = () => {
       </h1>
     );
 
+  const { loggedInUser, setUserName } = useContext(UserContext);
   //Conditional Rendering
 
   return listOfRestaurants.length === 0 ? (
@@ -62,7 +66,7 @@ const Body = () => {
             onClick={() => {
               //Filter the restaurant cards and update the UI
               //searchText
-              console.log(searchText);
+              //console.log(searchText);
               const filteredRestuarant = listOfRestaurants.filter((res) =>
                 res.info.name.toLowerCase().includes(searchText.toLowerCase())
               );
@@ -87,6 +91,15 @@ const Body = () => {
             Top Rated Restaurants
           </button>
         </div>
+
+        <div className="search m-4 p-4 flex items-center">
+          <label className="p-2">UserName:</label>
+          <input
+            value={loggedInUser}
+            className="border border-black p-1"
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </div>
       </div>
       <div className="flex flex-wrap">
         {filteredRestaurant.map((restaurant) => (
@@ -94,7 +107,11 @@ const Body = () => {
             key={restaurant.info.id}
             to={"/restaurants/" + restaurant.info.id}
           >
-            <RestaurantCard resData={restaurant} />{" "}
+            {restaurant.info.aggregatedDiscountInfoV3?.subHeader ? (
+              <RestaurantCardDeal resData={restaurant} />
+            ) : (
+              <RestaurantCard resData={restaurant} />
+            )}
           </Link>
         ))}
       </div>
