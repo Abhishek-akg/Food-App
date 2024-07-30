@@ -8,6 +8,9 @@ import Contact from "./components/Contact";
 import Error from "./components/Error";
 import RestaurantMenu from "./components/RestaurantMenu";
 import UserContext from "./Utils/userContext";
+import { Provider } from "react-redux";
+import appStore from "./Utils/appStore";
+import Cart from "./components/Cart";
 
 const Grocery = lazy(() => import("./components/Grocery"));
 const About = lazy(() => import("./components/About"));
@@ -28,17 +31,19 @@ const AppLayout = () => {
   }, []);
 
   return (
-    //Wrapping loggedInUser name inside all the components
-    <UserContext.Provider value={{ loggedInUser: userName, setUserName }}>
-      <div className="app">
-        {/* <UserContext.Provider value={{ loggedInUser: "The Header only name" }}> */}
-        {/* This overrides header loggedInUser name as "The Header only name" and not "Jacob RK" */}
-        {/* <Header />
+    <Provider store={appStore}>
+      {/* Wrapping loggedInUser name inside all the components */}
+      <UserContext.Provider value={{ loggedInUser: userName, setUserName }}>
+        <div className="app">
+          {/* <UserContext.Provider value={{ loggedInUser: "The Header only name" }}> */}
+          {/* This overrides header loggedInUser name as "The Header only name" and not "Jacob RK" */}
+          {/* <Header />
         </UserContext.Provider> */}
-        <Header />
-        <Outlet />
-      </div>
-    </UserContext.Provider>
+          <Header />
+          <Outlet />
+        </div>
+      </UserContext.Provider>
+    </Provider>
   );
 };
 
@@ -74,6 +79,10 @@ const appRouter = createBrowserRouter([
       {
         path: "/restaurants/:resId",
         element: <RestaurantMenu />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
       },
     ],
     errorElement: <Error />,
